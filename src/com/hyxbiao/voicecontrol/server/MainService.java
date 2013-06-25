@@ -1,6 +1,7 @@
 package com.hyxbiao.voicecontrol.server;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
@@ -20,7 +21,8 @@ public class MainService extends Service {
 	@Override
 	public void onCreate() {
 		Log.d(TAG, "service onCreate");
-		mVoiceControlServer = new VoiceControlServer();
+		Context context = getApplicationContext();
+		mVoiceControlServer = new VoiceControlServer(context);
 		mHandle = new Thread(mVoiceControlServer);
 		mHandle.start();
 	}

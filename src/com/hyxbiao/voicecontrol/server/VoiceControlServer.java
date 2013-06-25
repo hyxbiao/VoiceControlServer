@@ -13,8 +13,10 @@ import java.net.SocketException;
 
 import com.hyxbiao.voicecontrol.protocol.Packet;
 import com.hyxbiao.voicecontrol.server.manager.Manager;
+import com.hyxbiao.voicecontrol.server.manager.SystemManager;
 import com.hyxbiao.voicecontrol.server.manager.VideoManager;
 
+import android.content.Context;
 import android.util.Log;
 
 public class VoiceControlServer implements Runnable {
@@ -23,7 +25,9 @@ public class VoiceControlServer implements Runnable {
 	private final int mPort = 8300;
 	private ServerSocket mSocket;
 	
-	public VoiceControlServer() {
+	private Context mContext;
+	public VoiceControlServer(Context context) {
+		mContext = context;
 	}
 
 	@Override
@@ -93,17 +97,23 @@ public class VoiceControlServer implements Runnable {
 				//manager execute
 				Manager manager = null;
 				switch(type) {
+					case Packet.TYPE_SYSTEM:
+						manager = new SystemManager(mContext);
+						break;
 					case Packet.TYPE_VIDEO:
 						manager = new VideoManager();
 						break;
 					default:
 						break;
 				}
-				String result = "Error";
+				String result = null;
 				if(manager != null) {
 					result = manager.execute(cmd, params);
 				}
 				
+				if(result == null) {
+					result = "Error";
+				}
 				//response
 				PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(mSock.getOutputStream())));
 				out.println(result);

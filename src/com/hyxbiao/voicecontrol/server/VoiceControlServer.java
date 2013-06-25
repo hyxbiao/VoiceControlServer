@@ -51,11 +51,18 @@ public class VoiceControlServer implements Runnable {
 	}
 	
 	private class Worker implements Runnable {
+		private int READ_TIMEOUT = 10000;
 		private Socket mSock;
 		
 		@SuppressWarnings("unused")
 		public Worker(Socket sock) {
 			mSock = sock;
+			try {
+				mSock.setSoTimeout(READ_TIMEOUT);
+			} catch (SocketException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		@Override
 		public void run() {

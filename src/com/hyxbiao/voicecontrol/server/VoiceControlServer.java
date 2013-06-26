@@ -17,6 +17,8 @@ import com.hyxbiao.voicecontrol.server.manager.SystemManager;
 import com.hyxbiao.voicecontrol.server.manager.VideoManager;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 public class VoiceControlServer implements Runnable {
@@ -30,8 +32,39 @@ public class VoiceControlServer implements Runnable {
 		mContext = context;
 	}
 
+	private boolean checkNet(Context context) {
+		try {
+			ConnectivityManager connectivity = (ConnectivityManager) context
+			.getSystemService(Context.CONNECTIVITY_SERVICE);
+			if (connectivity != null) {
+				NetworkInfo info = connectivity.getActiveNetworkInfo();
+//				if (info == null || !info.isAvailable()) {
+//					return false;
+//				} else {
+//					return true;
+//				}
+				if (info != null && info.isConnected()) {
+					return true;
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 	@Override
 	public void run() {
+		Log.d(TAG, "wait for network on");
+		while(checkNet(mContext) != true) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		Log.d(TAG, "network is connected");
 		try {
 			mSocket = new ServerSocket(mPort);
 

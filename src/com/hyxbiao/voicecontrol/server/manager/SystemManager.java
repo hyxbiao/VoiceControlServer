@@ -29,7 +29,8 @@ public class SystemManager extends Manager {
 	
 	private String open(int code) {
 		String result = "open qq";
-		Intent LaunchIntent = mContext.getPackageManager().getLaunchIntentForPackage("com.tencent.mobileqq");
+		Intent LaunchIntent = mContext.getPackageManager().getLaunchIntentForPackage("com.tencent.hd.qq");
+//		Intent LaunchIntent = mContext.getPackageManager().getLaunchIntentForPackage("com.tencent.mobileqq");
 		mContext.startActivity(LaunchIntent);
 		return result;
 	}

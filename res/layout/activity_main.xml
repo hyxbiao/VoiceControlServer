@@ -15,7 +15,8 @@
         android:layout_alignLeft="@+id/start"
         android:layout_below="@+id/start"
         android:layout_marginTop="29dp"
-        android:text="@string/hello_world" />
+        android:text=""
+        android:textSize="20sp" />
 
     <Button
         android:id="@+id/start"
@@ -24,6 +25,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:onClick="onClick"
-        android:text="开启" />
+        android:text="@string/start_server" />
 
 </RelativeLayout>

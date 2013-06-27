@@ -3,14 +3,16 @@ package com.hyxbiao.voicecontrol.server;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Messenger;
 import android.util.Log;
 
 public class MainService extends Service {
 
 	private final static String TAG = "MainService";
 	
-	private Thread mServerThread = null;
+	private VoiceControlServer mServerThread = null;
 	@Override
 	public IBinder onBind(Intent intent) {
 		Log.d(TAG, "service onBind, intent: " + intent);
@@ -36,7 +38,12 @@ public class MainService extends Service {
 			Log.d(TAG, "mServerThread is null");
 		} else {
 			Log.d(TAG, "mServerThread is running");
-			boolean isBackGround = intent.getBooleanExtra("background", true);
+			Bundle bundle = intent.getExtras();
+			if(bundle != null) {
+				Messenger messenger = (Messenger) intent.getExtras().get("handler");
+				mServerThread.setMessenger(messenger);
+			}
+			//Handler handler = new Handler(Looper.getMainLooper());
 		}
 		return super.onStartCommand(intent, flags, startId);
 	}

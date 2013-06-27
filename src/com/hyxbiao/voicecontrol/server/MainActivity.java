@@ -4,6 +4,8 @@ import com.hyxbiao.voicecontrol.server.R;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
@@ -17,7 +19,14 @@ public class MainActivity extends Activity implements OnClickListener{
 	
 	TextView mResultTextView;
 	
-	private Handler mHandle = new Handler();
+	private Handler mHandler = new Handler() {
+		@Override
+		public void handleMessage(Message message) {
+			String text = (String) message.obj;
+			Log.d(TAG, "handleMessage: " + text);
+			updateText(text);
+		}
+	};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +49,7 @@ public class MainActivity extends Activity implements OnClickListener{
 			case R.id.start:
 				Log.d(TAG, "click button start");
 				Intent serviceIntent = new Intent(this, MainService.class);
-				serviceIntent.putExtra("background", false);
+				serviceIntent.putExtra("handler", new Messenger(mHandler));
 				startService(serviceIntent);
 				updateText("start server");
 				break;

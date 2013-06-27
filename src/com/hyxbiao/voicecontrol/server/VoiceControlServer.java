@@ -17,6 +17,9 @@ import com.hyxbiao.voicecontrol.server.manager.VideoManager;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.util.Log;
 
 public class VoiceControlServer extends Thread {
@@ -26,11 +29,31 @@ public class VoiceControlServer extends Thread {
 	private ServerSocket mSocket = null;
 	
 	private Context mContext;
+	private Messenger mMessenger = null;
 	
 	public VoiceControlServer(Context context) {
 		mContext = context;
 	}
 
+	public void setMessenger(Messenger messenger) {
+		mMessenger = messenger;
+	}
+	
+	private void writeLog(String tag, String msg) {
+		if(mMessenger != null) {
+			Log.d(TAG, "[Server] send message: " + msg);
+			Message message = Message.obtain();
+			message.obj = "[" + TAG + "] " + msg;
+			try {
+				mMessenger.send(message);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		Log.d(TAG, msg);
+	}
+	
 	private boolean checkNet(Context context) {
 		try {
 			ConnectivityManager connectivity = (ConnectivityManager) context
@@ -49,7 +72,7 @@ public class VoiceControlServer extends Thread {
 
 	@Override
 	public void run() {
-		Log.d(TAG, "wait for network on");
+		writeLog(TAG, "wait for network on");
 		while(checkNet(mContext) != true) {
 			try {
 				Thread.sleep(1000);
@@ -58,16 +81,16 @@ public class VoiceControlServer extends Thread {
 				e.printStackTrace();
 			}
 		}
-		Log.d(TAG, "network is connected");
+		writeLog(TAG, "network is connected");
 		try {
 			mSocket = new ServerSocket(mPort);
 
 			while(!this.isInterrupted()) {
-				Log.d(TAG, "start accept");
+				writeLog(TAG, "start accept");
 	
 				Socket clientSocket = mSocket.accept();
 	
-				Log.d(TAG, "accept new client connection");
+				writeLog(TAG, "accept new client connection");
 	
 				Worker worker = new Worker(clientSocket);
 				Thread clientThread = new Thread(worker);
@@ -78,7 +101,7 @@ public class VoiceControlServer extends Thread {
 			e.printStackTrace();
 			Log.e(TAG, e.getMessage());
 		}
-		Log.d(TAG, "server exit");
+		writeLog(TAG, "server exit");
 	}
 	
 	
@@ -100,7 +123,7 @@ public class VoiceControlServer extends Thread {
 			try {
 				DataInputStream in = new DataInputStream(mSock.getInputStream());
 				int version = in.readInt();
-				Log.d(TAG, "client version: " + version + ", server version: " + Packet.VERSION);
+				writeLog(TAG, "client version: " + version + ", server version: " + Packet.VERSION);
 				
 				int target = in.readInt();
 				if(target != Packet.TARGET_TPMINI) {
@@ -119,7 +142,7 @@ public class VoiceControlServer extends Thread {
 					in.read(buf, Packet.HEAD_LEN, bodyLen);
 					params = new String(buf);
 				}
-				Log.d(TAG, "type: " + type + ", cmd: " + cmd + ", body_len: " + bodyLen);
+				writeLog(TAG, "type: " + type + ", cmd: " + cmd + ", body_len: " + bodyLen);
 				
 				//manager execute
 				Manager manager = null;
@@ -142,6 +165,7 @@ public class VoiceControlServer extends Thread {
 					result = "Error";
 				}
 				//response
+//				String result = "test response!!!!";
 				PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(mSock.getOutputStream())));
 				out.println(result);
 				out.flush();
@@ -149,6 +173,9 @@ public class VoiceControlServer extends Thread {
 			} catch (IOException e) {
 				e.printStackTrace();
 				Log.w(TAG, "IOException: " + e);
+			} catch (Exception e) {
+				e.printStackTrace();
+				writeLog(TAG, "Exception: " + e);
 			}
 		}
 		

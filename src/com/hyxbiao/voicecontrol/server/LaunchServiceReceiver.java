@@ -13,7 +13,7 @@ public class LaunchServiceReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 		Log.d(TAG, "onReceive, intent: " + intent);
 		Intent serviceIntent = new Intent(context, MainService.class);
-		
+		serviceIntent.putExtra("background", true);
 		context.startService(serviceIntent);
 	}
 

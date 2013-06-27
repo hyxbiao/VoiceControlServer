@@ -1,10 +1,8 @@
 package com.hyxbiao.voicecontrol.server;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
@@ -21,13 +19,14 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
-public class VoiceControlServer implements Runnable {
+public class VoiceControlServer extends Thread {
 	private final static String TAG = "VoiceControlServer";
 
 	private final int mPort = 8300;
-	private ServerSocket mSocket;
+	private ServerSocket mSocket = null;
 	
 	private Context mContext;
+	
 	public VoiceControlServer(Context context) {
 		mContext = context;
 	}
@@ -38,11 +37,6 @@ public class VoiceControlServer implements Runnable {
 			.getSystemService(Context.CONNECTIVITY_SERVICE);
 			if (connectivity != null) {
 				NetworkInfo info = connectivity.getActiveNetworkInfo();
-//				if (info == null || !info.isAvailable()) {
-//					return false;
-//				} else {
-//					return true;
-//				}
 				if (info != null && info.isConnected()) {
 					return true;
 				}
@@ -68,7 +62,7 @@ public class VoiceControlServer implements Runnable {
 		try {
 			mSocket = new ServerSocket(mPort);
 
-			while(true) {
+			while(!this.isInterrupted()) {
 				Log.d(TAG, "start accept");
 	
 				Socket clientSocket = mSocket.accept();
@@ -87,11 +81,11 @@ public class VoiceControlServer implements Runnable {
 		Log.d(TAG, "server exit");
 	}
 	
+	
 	private class Worker implements Runnable {
 		private int READ_TIMEOUT = 10000;
 		private Socket mSock;
 		
-		@SuppressWarnings("unused")
 		public Worker(Socket sock) {
 			mSock = sock;
 			try {

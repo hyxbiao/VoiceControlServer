@@ -11,6 +11,7 @@ import java.net.SocketException;
 
 import com.hyxbiao.voicecontrol.protocol.Packet;
 import com.hyxbiao.voicecontrol.server.manager.Manager;
+import com.hyxbiao.voicecontrol.server.manager.QQManager;
 import com.hyxbiao.voicecontrol.server.manager.SystemManager;
 import com.hyxbiao.voicecontrol.server.manager.VideoManager;
 
@@ -148,7 +149,10 @@ public class VoiceControlServer extends Thread {
 				Manager manager = null;
 				switch(type) {
 					case Packet.TYPE_SYSTEM:
-						manager = new SystemManager(mContext);
+						manager = new SystemManager(mContext, target, mMessenger);
+						break;
+					case Packet.TYPE_QQ:
+						manager = new QQManager(mContext, target, mMessenger);
 						break;
 					case Packet.TYPE_VIDEO:
 						manager = new VideoManager();

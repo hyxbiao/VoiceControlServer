@@ -1,5 +1,13 @@
 package com.hyxbiao.voicecontrol.server;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -19,10 +27,41 @@ public class MainService extends Service {
 		return null;
 	}
 	
+	private void init(Context context) {
+		String outDir = context.getFilesDir().getAbsolutePath();
+		String fileName = "uiautoTest.jar";
+		File outFile = new File(outDir, fileName);
+		Log.d(TAG, "outfile name: " + outFile.getAbsolutePath());
+		
+		try {
+			
+			OutputStream out = new BufferedOutputStream(new FileOutputStream(outFile));
+			InputStream in = context.getAssets().open(fileName);
+			byte[] buffer = new byte[1024];
+			int ret;
+			while((ret = in.read(buffer)) != -1) {
+				out.write(buffer, 0, ret);
+			}
+			out.flush();
+			in.close();
+			out.close();
+			
+			Runtime.getRuntime().exec("chmod 0644 " + outFile.getAbsolutePath());
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.d(TAG, "write file error", e);
+		}
+	}
 	@Override
 	public void onCreate() {
 		Log.d(TAG, "service onCreate");
 		Context context = getApplicationContext();
+		
+		//init for copy assets
+		init(context);
+		
 		if(mServerThread == null) {
 			Log.d(TAG, "thread is created");
 			mServerThread = new VoiceControlServer(context);

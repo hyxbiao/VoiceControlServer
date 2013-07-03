@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Messenger;
 import android.util.Log;
+import android.view.KeyEvent;
 
 import com.hyxbiao.voicecontrol.protocol.Packet;
 
@@ -30,7 +31,16 @@ public class SystemManager extends Manager {
 				result = open(Packet.CMD_SYSTEM_OPEN_QQ);
 				break;
 			case Packet.CMD_SYSTEM_HOME:
-				UiControl.exec(mContext, UiControl.SYSTEM_HOME, null);
+				UiControl.execRootCommand("input keyevent " + KeyEvent.KEYCODE_HOME);
+				break;
+			case Packet.CMD_SYSTEM_BACK:
+				UiControl.execRootCommand("input keyevent " + KeyEvent.KEYCODE_BACK);
+				break;
+			case Packet.CMD_SYSTEM_VOLUME_UP:
+				UiControl.execRootCommand("input keyevent " + KeyEvent.KEYCODE_VOLUME_UP);
+				break;
+			case Packet.CMD_SYSTEM_VOLUME_DOWN:
+				UiControl.execRootCommand("input keyevent " + KeyEvent.KEYCODE_VOLUME_DOWN);
 				break;
 			default:
 				result = "unknown command";

@@ -32,13 +32,13 @@ public class QQManager extends Manager {
 				result = openVideo(cmd);
 				break;
 			case Packet.CMD_QQ_VIDEO_SCREEN_MAX:
-				UiControl.exec(mContext, UiControl.QQ_SCREEN_MAX, null);
+				UiControl.execUICommand(mContext, UiControl.QQ_SCREEN_MAX, null);
 				break;
 			case Packet.CMD_QQ_VIDEO_SCREEN_MIN:
-				UiControl.exec(mContext, UiControl.QQ_SCREEN_MIN, null);
+				UiControl.execUICommand(mContext, UiControl.QQ_SCREEN_MIN, null);
 				break;
 			case Packet.CMD_QQ_VIDEO_CLOSE:
-				UiControl.exec(mContext, UiControl.QQ_CLOSE_VIDEO, null);
+				UiControl.execUICommand(mContext, UiControl.QQ_CLOSE_VIDEO, null);
 				break;
 			default:
 				result = "unknown command";
@@ -56,7 +56,7 @@ public class QQManager extends Manager {
 			bundle.putString("search", "tieshuyi");
 			bundle.putString("name", "铁树一叶");
 		}
-		String output = UiControl.exec(mContext, UiControl.QQ_OPEN_VIDEO, bundle);
+		String output = UiControl.execUICommand(mContext, UiControl.QQ_OPEN_VIDEO, bundle);
 		Log.d(TAG, "command output: " + output);
 		
 		return result;

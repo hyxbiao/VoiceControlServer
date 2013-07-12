@@ -121,6 +121,11 @@ public class VoiceControlServer extends Thread {
 		}
 		@Override
 		public void run() {
+			while(mSock.isConnected()) {
+				process();
+			}
+		}
+		private void process() {
 			try {
 				DataInputStream in = new DataInputStream(mSock.getInputStream());
 				int version = in.readInt();
